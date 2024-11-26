@@ -8,7 +8,8 @@ public class Car {
     private final String carName;
     private final Engine engine;
     private int position;
-    Validator validator = CarNameValidator.getInstance();
+
+    Validator validator = new CarNameValidator();
 
     public Car(String carName, Engine randomEngine) {
         validator.validation(carName);
@@ -22,7 +23,7 @@ public class Car {
     }
 
     public void move() {
-        if (engine.isEngineRunning()) {
+        if (canMove()) {
             position++;
         }
     }
@@ -30,5 +31,7 @@ public class Car {
     public int getPosition() {
         return position;
     }
-
+    private boolean canMove() {
+        return engine.isEngineRunning();
+    }
 }

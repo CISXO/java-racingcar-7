@@ -5,14 +5,18 @@ import java.util.List;
 public class CarRacing {
 
     private final List<Car> cars;
-
+    private int totalMove;
 
     public CarRacing(List<Car> cars) {
         this.cars = cars;
     }
 
-    public void startRacing() {
-        moveCars();
+    public void startRacing(int totalMoveCount) {
+        this.totalMove = totalMoveCount;
+
+        for (int i = 0; i < totalMove; i++) {
+            moveCars();
+        }
     }
 
     private void moveCars() {
@@ -29,8 +33,7 @@ public class CarRacing {
         return status.toString();
     }
 
-
-    public List<String> getWinner() {
+    public List<String> getWinners() {
         int maxPosition = cars.stream().mapToInt(Car::getPosition).max().orElse(0);
         return cars.stream()
                 .filter(car -> car.getPosition() == maxPosition)
