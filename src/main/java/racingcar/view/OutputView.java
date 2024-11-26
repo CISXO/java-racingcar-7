@@ -24,4 +24,7 @@ public class OutputView {
 
     public void printWinners(List<String> winners) { printMessage(PRINT_WINNER_MESSAGE + String.join(", ", winners)); }
 
+    public void exception(IllegalArgumentException e) {
+        printMessage(e.getMessage());
+    }
 }

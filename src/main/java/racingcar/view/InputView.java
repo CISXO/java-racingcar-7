@@ -1,14 +1,16 @@
 package racingcar.view;
 
 import camp.nextstep.edu.missionutils.Console;
+import racingcar.utils.CarNameValidator;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class InputView {
     private static final String INPUT_DELIMITER_COMMA = ",";
+
     private final ArrayList<String> inputDataList;
-    String inputData;
+    public String inputData;
+    CarNameValidator carNameValidator = new CarNameValidator();
 
     public InputView() {
         inputDataList = new ArrayList<>();
@@ -26,16 +28,9 @@ public class InputView {
 
             for (String carName : parsedString) {
                 String trimmedCarName = carName.trim();
-                checkDuplicateAndAddCarName(trimmedCarName);
+                carNameValidator.checkDuplicateAndAddCarName(inputDataList, trimmedCarName);
             }
         }
-    }
-
-    private void checkDuplicateAndAddCarName(String carName) {
-        if (inputDataList.contains(carName)) {
-            throw new IllegalArgumentException("Error: 중복된 이름이 존재합니다.");
-        }
-        inputDataList.add(carName);
     }
 
     private void trimFirstElement(String[] parsedString) {
