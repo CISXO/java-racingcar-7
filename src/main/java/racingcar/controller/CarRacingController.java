@@ -16,7 +16,8 @@ public class CarRacingController {
 
     private final InputView inputView;
     private final OutputView outputView;
-    Validator validator = new CarRacingValidator();
+    private final Validator validator = new CarRacingValidator();
+    private CarRacing carRacing;
 
     public CarRacingController() {
         this.inputView = new InputView();
@@ -24,51 +25,56 @@ public class CarRacingController {
     }
 
     public void run() {
-        List<Car> cars = initializeCars();
-        int totalRacingCounter = getTotalRacingCounter();
+        process(this::requestCarName);
+        process(this::initializeCarRacing);
+        process(this::startRacing);
+        process(this::showWinners);
+    }
 
-        CarRacing carRacing = new CarRacing(cars);
+    private void requestCarName() {
+        outputView.printReadCarNameMessage();
+        String readCarString = inputView.readInput();
+        inputView.parserInputString(readCarString);
+    }
+
+    private void initializeCarRacing() {
+        List<Car> cars = createCarList(inputView.getParserInputString());
+        carRacing = new CarRacing(cars);
+    }
+
+    private void startRacing() {
+        outputView.printReadTotalTryMessage();
+        String readTotalMove = inputView.readInput();
+        validator.validation(readTotalMove);
+
+        int totalMoveCount = Integer.parseInt(readTotalMove);
+        carRacing.startRacing(totalMoveCount);
+
         outputView.printRunResult();
-        executeRaces(carRacing, totalRacingCounter);
+        outputView.printMessage(carRacing.recordRaceStatus());
+    }
 
-        List<String> winners = carRacing.getWinner();
+    private void showWinners() {
+        List<String> winners = carRacing.getWinners();
         outputView.printWinners(winners);
     }
 
-    private List<Car> initializeCars() {
-        outputView.printReadCarNameMessage();
-
-        String readCarString = inputView.readInput();
-        inputView.parserInputString(readCarString);
-
-        return createCars(inputView.getParserInputString());
-    }
-
-    private int getTotalRacingCounter() {
-        outputView.printReadTotalTryMessage();
-
-        String readTotalTryString = inputView.readInput();
-        validator.validation(readTotalTryString);
-
-        return Integer.parseInt(readTotalTryString);
-    }
-
-    private void executeRaces(CarRacing carRacing, int totalRacingCounter) {
-        for (int i = 0; i < totalRacingCounter; i++) {
-            carRacing.startRacing();
-            outputView.printMessage(carRacing.recordRaceStatus());
-        }
-    }
-
-    private List<Car> createCars(ArrayList<String> carNameList) {
+    private List<Car> createCarList(List<String> carNameList) {
         Engine randomEngine = new RandomEngine();
         List<Car> cars = new ArrayList<>();
 
         for (String carName : carNameList) {
-            Car car = new Car(carName, randomEngine);
-            cars.add(car);
+            cars.add(new Car(carName, randomEngine));
         }
-
         return cars;
+    }
+
+    private void process(Runnable action) {
+        try {
+            action.run();
+        } catch (IllegalArgumentException e) {
+            outputView.exception(e);
+            throw e;
+        }
     }
 }
